@@ -9,7 +9,7 @@ export default function TurmaCard({ turma }: { turma: Turma }) {
 		>
 			<div className="tw:flex tw:flex-col tw:gap-1">
 				<span className="tw:text-sm tw:font-medium tw:text-blue-800">
-					Ano: {turma.ano} - Período: {turma.periodo}
+					{turma.disciplina.nome} - Período: {turma.periodo}
 				</span>
 				<span className="tw:text-xs tw:text-neutral-500">
 					Professor(a): {turma.professor.nome} ({turma.professor.email})
@@ -18,7 +18,9 @@ export default function TurmaCard({ turma }: { turma: Turma }) {
 					Alunos inscritos: {turma.alunos.length}
 				</span>
 			</div>
-			<span className="tw:text-xs tw:text-neutral-400">ID: {turma.id}</span>
+			<span className="tw:text-xs tw:text-neutral-400">
+				ID: {turma.id} | Carga Horária: {turma.disciplina.cargaHoraria} horas
+			</span>
 		</Link>
 	);
 }

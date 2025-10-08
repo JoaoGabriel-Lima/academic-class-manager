@@ -90,9 +90,12 @@ function Turma() {
 				</Link>
 
 				<div className="tw:w-full mb-4 tw:outline tw:outline-neutral-300 tw:rounded-md tw:shadow-sm tw:bg-neutral-50 tw:p-3">
-					<h1 className="fs-5 tw:mb-2 tw:font-bold tw:text-blue-700!">
+					<h1 className="fs-6 mb-2 tw:font-bold tw:text-blue-700!">
 						Detalhes da Turma
 					</h1>
+					<h3 className="mb-1 tw:text-sm!">
+						Disciplina: {turma.disciplina.nome}
+					</h3>
 					<div className="tw:flex tw:items-center fs-7 tw:gap-4 tw:text-neutral-600">
 						<div className="tw:flex tw:items-center tw:gap-2">
 							<PiCalendar className="fs-6" />
@@ -103,6 +106,10 @@ function Turma() {
 						<span className="tw:text-neutral-400 tw:text-xs">|</span>
 						<span className="tw:font-semibold tw:text-xs">
 							Período: {turma.periodo}
+						</span>
+						<span className="tw:text-neutral-400 tw:text-xs">|</span>
+						<span className="tw:font-semibold tw:text-xs">
+							Carga Horária: {turma.disciplina.cargaHoraria}
 						</span>
 						<span className="tw:text-neutral-400 tw:text-xs">|</span>
 						<span className="tw:text-sm tw:text-neutral-400 text-xs">
