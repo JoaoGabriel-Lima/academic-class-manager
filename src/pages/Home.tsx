@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AlunosTab from "../components/aluno";
+import BuscarTurmas from "../components/buscar-turmas";
 import TurmasTab from "../components/turmas";
 
 function Home() {
@@ -28,6 +29,15 @@ function Home() {
 							Turmas
 						</button>
 					</li>
+					<li className="nav-item">
+						<button
+							onClick={() => setSelectedTab("Buscar-Turmas")}
+							type="button"
+							className={`nav-link ${selectedTab === "Buscar-Turmas" ? "active" : ""}`}
+						>
+							Buscar Turmas
+						</button>
+					</li>
 				</ul>
 			</section>
 			<section className="mx-auto container-xl d-flex flex-column gap-3 w-100">
@@ -41,6 +51,12 @@ function Home() {
 					<div className="gap-1 d-flex flex-column">
 						<h2 className="fs-6">Lista de Turmas</h2>
 						<TurmasTab />
+					</div>
+				)}
+				{selectedTab === "Buscar-Turmas" && (
+					<div className="gap-1 d-flex flex-column">
+						<h2 className="fs-6">Pesquisa de Turmas</h2>
+						<BuscarTurmas />
 					</div>
 				)}
 			</section>
