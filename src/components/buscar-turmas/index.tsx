@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 import type { Turma } from "../turmas/type";
 import TableSection from "./pagination-table";
@@ -8,34 +9,19 @@ import TurmaSection from "./turma-section";
 
 export default function BuscarTurmas() {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [filteredTurmas, setFilteredTurmas] = useState<Turma[]>([]);
 	const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
 
-	useEffect(() => {
-		if (searchTerm.trim() === "") {
-			setFilteredTurmas([]);
-			setSelectedTurma(null);
-			return;
-		}
-
-		const fetchTurmas = async () => {
-			setIsLoading(true);
-			try {
-				const response = await fetch(
-					`http://localhost:8080/api/turmas/buscar?search=${searchTerm}&page=1&size=100`,
-				);
-				const data = await response.json();
-				setFilteredTurmas(data.itens);
-			} catch (error) {
-				console.error("Error fetching turmas:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchTurmas();
-	}, [searchTerm]);
+	const { data: filteredTurmas = [], isLoading } = useQuery<Turma[]>({
+		queryKey: ["turmas-buscar", searchTerm],
+		queryFn: async () => {
+			const response = await fetch(
+				`http://localhost:8080/api/turmas/buscar?search=${searchTerm}&page=1&size=100`,
+			);
+			const data = await response.json();
+			return data.itens;
+		},
+		enabled: searchTerm.trim() !== "",
+	});
 
 	return (
 		<div className="tw:w-full  tw:p-3 tw:outline-1 tw:gap-3 tw:flex tw:flex-col tw:outline-neutral-300 tw:rounded-md tw:shadow-sm">

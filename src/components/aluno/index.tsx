@@ -1,28 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { PiSpinner } from "react-icons/pi";
 import AlunoCard from "./card";
 import type { Aluno } from "./type";
 
 export default function AlunosTab() {
-	const [isLoading, setIsLoading] = useState(true);
-	const [alunos, setAlunos] = useState<Array<Aluno>>([]);
-
-	const fetchAlunos = useCallback(async () => {
-		setIsLoading(true);
-		try {
+	const { data: alunos = [], isLoading } = useQuery<Array<Aluno>>({
+		queryKey: ["alunos"],
+		queryFn: async () => {
 			const response = await fetch("http://localhost:8080/api/alunos");
-			const data = await response.json();
-			setAlunos(data);
-		} catch (error) {
-			console.error("Erro ao buscar alunos:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchAlunos();
-	}, [fetchAlunos]);
+			return response.json();
+		},
+	});
 
 	return (
 		<div className="tw:w-full tw:outline tw:outline-neutral-300 tw:rounded-md tw:shadow-sm tw:bg-neutral-50 tw:p-3">

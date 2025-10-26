@@ -1,28 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { PiSpinner } from "react-icons/pi";
 import TurmaCard from "./card";
 import type { Turma } from "./type";
 
 export default function TurmasTab() {
-	const [isLoading, setIsLoading] = useState(true);
-	const [turmas, setTurmas] = useState<Array<Turma>>([]);
-
-	const fetchTurmas = useCallback(async () => {
-		setIsLoading(true);
-		try {
+	const { data: turmas = [], isLoading } = useQuery<Array<Turma>>({
+		queryKey: ["turmas"],
+		queryFn: async () => {
 			const response = await fetch("http://localhost:8080/api/turmas");
-			const data = await response.json();
-			setTurmas(data);
-		} catch (error) {
-			console.error("Erro ao buscar turmas:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchTurmas();
-	}, [fetchTurmas]);
+			return response.json();
+		},
+	});
 
 	return (
 		<div className="tw:w-full tw:outline tw:outline-neutral-300 tw:rounded-md tw:shadow-sm tw:bg-neutral-50 tw:p-3">

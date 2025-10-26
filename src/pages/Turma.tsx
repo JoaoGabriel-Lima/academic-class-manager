@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
 	PiArrowLeft,
 	PiCalendar,
@@ -15,33 +15,22 @@ import type { Turma as TurmaType } from "../components/turmas/type";
 
 function Turma() {
 	const { id } = useParams<{ id: string }>();
-	const [isLoading, setIsLoading] = useState(true);
-	const [turma, setTurma] = useState<TurmaType | null>(null);
-	const [error, setError] = useState<string | null>(null);
 
-	useEffect(() => {
-		const fetchTurma = async () => {
-			setIsLoading(true);
-			setError(null);
-			try {
-				const response = await fetch(`http://localhost:8080/api/turmas/${id}`);
-				if (!response.ok) {
-					throw new Error("Turma não encontrada");
-				}
-				const data = await response.json();
-				setTurma(data);
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Erro ao carregar turma");
-				console.error("Erro ao buscar turma:", err);
-			} finally {
-				setIsLoading(false);
+	const {
+		data: turma,
+		isLoading,
+		error,
+	} = useQuery<TurmaType>({
+		queryKey: ["turma", id],
+		queryFn: async () => {
+			const response = await fetch(`http://localhost:8080/api/turmas/${id}`);
+			if (!response.ok) {
+				throw new Error("Turma não encontrada");
 			}
-		};
-
-		if (id) {
-			fetchTurma();
-		}
-	}, [id]);
+			return response.json();
+		},
+		enabled: !!id,
+	});
 
 	if (isLoading) {
 		return (
@@ -70,7 +59,7 @@ function Turma() {
 							Erro ao carregar turma
 						</h2>
 						<p className="tw:text-neutral-600">
-							{error || "Turma não encontrada"}
+							{error instanceof Error ? error.message : "Turma não encontrada"}
 						</p>
 					</div>
 				</div>
