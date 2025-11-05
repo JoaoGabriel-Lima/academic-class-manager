@@ -1,4 +1,5 @@
 import { useState } from "react";
+import GerenciarGrupos from "@/components/gerenciar-grupos";
 import AlunosTab from "../components/aluno";
 import BuscarTurmas from "../components/buscar-turmas";
 import TurmasTab from "../components/turmas";
@@ -38,6 +39,15 @@ function Home() {
 							Buscar Turmas
 						</button>
 					</li>
+					<li className="nav-item">
+						<button
+							onClick={() => setSelectedTab("Gerenciar-Grupos")}
+							type="button"
+							className={`nav-link ${selectedTab === "Gerenciar-Grupos" ? "active" : ""}`}
+						>
+							Gerenciar Grupos
+						</button>
+					</li>
 				</ul>
 			</section>
 			<section className="mx-auto container-xl d-flex flex-column gap-3 w-100">
@@ -57,6 +67,12 @@ function Home() {
 					<div className="gap-1 d-flex flex-column">
 						<h2 className="fs-6">Pesquisa de Turmas</h2>
 						<BuscarTurmas />
+					</div>
+				)}
+				{selectedTab === "Gerenciar-Grupos" && (
+					<div className="gap-1 d-flex flex-column">
+						<h2 className="fs-6">Gerenciar Grupos</h2>
+						<GerenciarGrupos />
 					</div>
 				)}
 			</section>
