@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import GerenciarGrupos from "@/components/gerenciar-grupos";
 import AlunosTab from "../components/aluno";
 import BuscarTurmas from "../components/buscar-turmas";
@@ -6,6 +7,7 @@ import TurmasTab from "../components/turmas";
 
 function Home() {
 	const [selectedTab, setSelectedTab] = useState("Alunos");
+	const navigate = useNavigate();
 
 	return (
 		<div className="container flex-grow-1 mt-4 gap-3 d-flex flex-column align-items-center w-100">
@@ -32,6 +34,15 @@ function Home() {
 					</li>
 					<li className="nav-item">
 						<button
+							onClick={() => navigate("/inscricao")}
+							type="button"
+							className={`nav-link`}
+						>
+							Inscrições
+						</button>
+					</li>
+					<li className="nav-item">
+						<button
 							onClick={() => setSelectedTab("Buscar-Turmas")}
 							type="button"
 							className={`nav-link ${selectedTab === "Buscar-Turmas" ? "active" : ""}`}
@@ -53,7 +64,14 @@ function Home() {
 			<section className="mx-auto container-xl d-flex flex-column gap-3 w-100">
 				{selectedTab === "Alunos" && (
 					<div className="gap-1 d-flex flex-column">
-						<h2 className="fs-6">Lista Alunos</h2>
+						<div className="tw:w-full tw:flex tw:justify-between tw:items-center! tw:mb-4!">
+							<h2 className="fs-6 tw:mb-0!">Lista Alunos</h2>
+							<Link to="/alunos/cadastro">
+								<button type="button" className="btn btn-secondary btn-sm">
+									Adicionar Aluno
+								</button>
+							</Link>
+						</div>
 						<AlunosTab />
 					</div>
 				)}
