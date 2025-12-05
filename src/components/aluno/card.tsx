@@ -1,7 +1,20 @@
 import { Link } from "react-router-dom";
+import { PiTrash } from "react-icons/pi";
 import type { Aluno } from "./type";
+import { useDeleteAluno } from "@/hooks/useAlunos";
 
 export default function AlunoCard({ aluno }: { aluno: Aluno }) {
+	const deleteAluno = useDeleteAluno();
+
+	const handleDelete = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (window.confirm(`Deseja realmente apagar o aluno "${aluno.nome}"?`)) {
+			deleteAluno.mutate(aluno.id);
+		}
+	};
+
 	return (
 		<Link to={`/alunos/${aluno.id}`}>
 			<div
@@ -21,14 +34,25 @@ export default function AlunoCard({ aluno }: { aluno: Aluno }) {
 						{aluno.email}
 					</span>
 				</div>
-				<span
-					className="tw:text-xs tw:text-neutral-400 tw:no-underline!"
-					style={{
-						textDecoration: "none !important",
-					}}
-				>
-					ID: {aluno.id}
-				</span>
+				<div className="tw:flex tw:items-center tw:gap-3">
+					<span
+						className="tw:text-xs tw:text-neutral-400 tw:no-underline!"
+						style={{
+							textDecoration: "none !important",
+						}}
+					>
+						ID: {aluno.id}
+					</span>
+					<button
+						type="button"
+						onClick={handleDelete}
+						disabled={deleteAluno.isPending}
+						className="tw:p-1.5 tw:rounded-md tw:text-red-700 hover:tw:bg-red-100 hover:tw:text-red-700 tw:transition-colors disabled:tw:opacity-50"
+						title="Apagar aluno"
+					>
+						<PiTrash className="tw:text-lg" />
+					</button>
+				</div>
 			</div>
 		</Link>
 	);

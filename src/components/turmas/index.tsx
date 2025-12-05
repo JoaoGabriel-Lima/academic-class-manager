@@ -2,12 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { PiSpinner } from "react-icons/pi";
 import TurmaCard from "./card";
 import type { Turma } from "./type";
+import useAuthFetch from "@/hooks/useAuthFetch";
 
 export default function TurmasTab() {
+	const { authFetch } = useAuthFetch();	
 	const { data: turmas = [], isLoading } = useQuery<Array<Turma>>({
 		queryKey: ["turmas"],
 		queryFn: async () => {
-			const response = await fetch("http://localhost:8080/api/turmas");
+			const response = await authFetch("http://localhost:8080/api/turmas");
 			return response.json();
 		},
 	});

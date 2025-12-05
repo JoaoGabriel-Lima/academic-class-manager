@@ -4,15 +4,22 @@ import GerenciarGrupos from "@/components/gerenciar-grupos";
 import AlunosTab from "../components/aluno";
 import BuscarTurmas from "../components/buscar-turmas";
 import TurmasTab from "../components/turmas";
+import useTokenStore from "@/stores/token.store";
 
 function Home() {
 	const [selectedTab, setSelectedTab] = useState("Alunos");
+	const {nome} = useTokenStore((s) => s.tokenResponse);
 	const navigate = useNavigate();
 
 	return (
 		<div className="container flex-grow-1 mt-4 gap-3 d-flex flex-column align-items-center w-100">
 			<section className="mx-auto container-xl border-0 d-flex justify-content-between align-items-center w-100 border-bottom border-2 p-2">
-				<h1 className="fs-5 text-primary">Página Inicial</h1>
+				<h1>
+					<span className="fs-5 text-primary">Página Inicial</span>
+					<span className="tw:bg-blue-500! tw:text-white tw:px-1 tw:py-0.5 tw:ml-1.5 tw:text-sm tw:rounded!">
+						{nome}
+					</span>
+				</h1>
 				<ul className="nav nav-pills nav-fill gap-2">
 					<li className="nav-item">
 						<button

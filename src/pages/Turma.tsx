@@ -12,9 +12,12 @@ import {
 import { Link, useParams } from "react-router-dom";
 import AlunoCard from "../components/aluno/card";
 import type { Turma as TurmaType } from "../components/turmas/type";
+import useAuthFetch from "@/hooks/useAuthFetch";
 
 function Turma() {
 	const { id } = useParams<{ id: string }>();
+	const { authFetch } = useAuthFetch();
+
 
 	const {
 		data: turma,
@@ -23,7 +26,7 @@ function Turma() {
 	} = useQuery<TurmaType>({
 		queryKey: ["turma", id],
 		queryFn: async () => {
-			const response = await fetch(`http://localhost:8080/api/turmas/${id}`);
+			const response = await authFetch(`http://localhost:8080/api/turmas/${id}`);
 			if (!response.ok) {
 				throw new Error("Turma não encontrada");
 			}

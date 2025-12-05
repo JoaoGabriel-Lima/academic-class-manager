@@ -6,15 +6,17 @@ import { useState } from "react";
 import type { Turma } from "../turmas/type";
 import TableSection from "./pagination-table";
 import TurmaSection from "./turma-section";
+import useAuthFetch from "@/hooks/useAuthFetch";
 
 export default function BuscarTurmas() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
+	const { authFetch } = useAuthFetch();
 
 	const { data: filteredTurmas = [], isLoading } = useQuery<Turma[]>({
 		queryKey: ["turmas-buscar", searchTerm],
 		queryFn: async () => {
-			const response = await fetch(
+			const response = await authFetch(
 				`http://localhost:8080/api/turmas/buscar?search=${searchTerm}&page=1&size=100`,
 			);
 			const data = await response.json();
