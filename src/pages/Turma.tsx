@@ -10,14 +10,13 @@ import {
 	PiUser,
 } from "react-icons/pi";
 import { Link, useParams } from "react-router-dom";
+import useApi from "@/hooks/useApi";
 import AlunoCard from "../components/aluno/card";
 import type { Turma as TurmaType } from "../components/turmas/type";
-import useAuthFetch from "@/hooks/useAuthFetch";
 
 function Turma() {
 	const { id } = useParams<{ id: string }>();
-	const { authFetch } = useAuthFetch();
-
+	const { recuperarPorId } = useApi<TurmaType>("/api/turmas");
 
 	const {
 		data: turma,
@@ -25,13 +24,7 @@ function Turma() {
 		error,
 	} = useQuery<TurmaType>({
 		queryKey: ["turma", id],
-		queryFn: async () => {
-			const response = await authFetch(`http://localhost:8080/api/turmas/${id}`);
-			if (!response.ok) {
-				throw new Error("Turma não encontrada");
-			}
-			return response.json();
-		},
+		queryFn: () => recuperarPorId(id as string),
 		enabled: !!id,
 	});
 

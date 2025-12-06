@@ -1,52 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Aluno } from "../components/aluno/type";
-import useAuthFetch from "./useAuthFetch";
-
-const API_URL = "http://localhost:8080/api/alunos";
+import useApi from "./useApi";
 
 export function useGetAlunos() {
-	const { authFetch } = useAuthFetch();
+	const { recuperarTodos } = useApi<Aluno>("/api/alunos");
 
 	return useQuery({
 		queryKey: ["alunos"],
-		queryFn: async (): Promise<Aluno[]> => {
-			const response = await authFetch(API_URL);
-			if (!response) throw new Error("Falha ao buscar alunos");
-			return response.json();
-		},
+		queryFn: recuperarTodos,
 	});
 }
 
 export function useGetAluno(id: number) {
-	const { authFetch } = useAuthFetch();
+	const { recuperarPorId } = useApi<Aluno>("/api/alunos");
 
 	return useQuery({
 		queryKey: ["alunos", id],
-		queryFn: async (): Promise<Aluno> => {
-			const response = await authFetch(`${API_URL}/${id}`);
-			if (!response) throw new Error("Falha ao buscar aluno");
-			return response.json();
-		},
+		queryFn: () => recuperarPorId(id),
 		enabled: !!id,
 	});
 }
 
 export function useCreateAluno() {
-	const { authFetch } = useAuthFetch();
+	const { criar } = useApi<Aluno>("/api/alunos");
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (aluno: Omit<Aluno, "id">): Promise<Aluno> => {
-			const response = await authFetch(API_URL, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(aluno),
-			});
-			if (!response) throw new Error("Falha ao criar aluno");
-			return response.json();
-		},
+		mutationFn: criar,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["alunos"] });
 		},
@@ -54,21 +34,11 @@ export function useCreateAluno() {
 }
 
 export function useUpdateAluno() {
-	const { authFetch } = useAuthFetch();
+	const { alterar } = useApi<Aluno>("/api/alunos");
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (aluno: Aluno): Promise<Aluno> => {
-			const response = await authFetch(`${API_URL}/${aluno.id}`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(aluno),
-			});
-			if (!response) throw new Error("Falha ao atualizar aluno");
-			return response.json();
-		},
+		mutationFn: alterar,
 		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: ["alunos"] });
 			queryClient.invalidateQueries({ queryKey: ["alunos", data.id] });
@@ -77,16 +47,11 @@ export function useUpdateAluno() {
 }
 
 export function useDeleteAluno() {
-	const { authFetch } = useAuthFetch();
+	const { remover } = useApi<Aluno>("/api/alunos");
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (id: number): Promise<void> => {
-			const response = await authFetch(`${API_URL}/${id}`, {
-				method: "DELETE",
-			});
-			if (!response) throw new Error("Falha ao deletar aluno");
-		},
+		mutationFn: remover,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["alunos"] });
 		},

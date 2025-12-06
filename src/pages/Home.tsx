@@ -1,26 +1,35 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GerenciarGrupos from "@/components/gerenciar-grupos";
+import { useLogout } from "@/hooks/useLogin";
+import CadastrarUsuario from "@/pages/usuarios/CadastrarUsuario";
+import useTokenStore from "@/stores/token.store";
 import AlunosTab from "../components/aluno";
 import BuscarTurmas from "../components/buscar-turmas";
 import TurmasTab from "../components/turmas";
-import useTokenStore from "@/stores/token.store";
 
 function Home() {
 	const [selectedTab, setSelectedTab] = useState("Alunos");
-	const {nome} = useTokenStore((s) => s.tokenResponse);
+	const logout = useLogout();
+	const { nome, role } = useTokenStore((s) => s.tokenResponse);
 	const navigate = useNavigate();
+	const isAdmin = role === "ADMIN";
 
 	return (
 		<div className="container flex-grow-1 mt-4 gap-3 d-flex flex-column align-items-center w-100">
 			<section className="mx-auto container-xl border-0 d-flex justify-content-between align-items-center w-100 border-bottom border-2 p-2">
 				<h1>
 					<span className="fs-5 text-primary">Página Inicial</span>
-					<span className="tw:bg-blue-500! tw:text-white tw:px-1 tw:py-0.5 tw:ml-1.5 tw:text-sm tw:rounded!">
-						{nome}
+					{/** biome-ignore lint/a11y/useKeyWithClickEvents: Mesclar com o H1 pai */}
+					{/** biome-ignore lint/a11y/noStaticElementInteractions: Mesclar com o H1 pai */}
+					<span
+						onClick={logout}
+						className="tw:bg-blue-500! tw:hover:bg-blue-600! tw:transition-all tw:cursor-pointer tw:text-white tw:px-1 tw:py-0.5 tw:ml-1.5 tw:text-sm tw:rounded!"
+					>
+						{nome} <span className="tw:font-bold">({role})</span>
 					</span>
 				</h1>
-				<ul className="nav nav-pills nav-fill gap-2">
+				<ul className="nav nav-pills nav-fill justify-content-end gap-2">
 					<li className="nav-item">
 						<button
 							onClick={() => setSelectedTab("Alunos")}
@@ -63,9 +72,20 @@ function Home() {
 							type="button"
 							className={`nav-link ${selectedTab === "Gerenciar-Grupos" ? "active" : ""}`}
 						>
-							Gerenciar Grupos
+							Grupos
 						</button>
 					</li>
+					{isAdmin && (
+						<li className="nav-item">
+							<button
+								onClick={() => setSelectedTab("Cadastrar-Usuario")}
+								type="button"
+								className={`nav-link ${selectedTab === "Cadastrar-Usuario" ? "active" : ""}`}
+							>
+								Cadastrar Usuário
+							</button>
+						</li>
+					)}
 				</ul>
 			</section>
 			<section className="mx-auto container-xl d-flex flex-column gap-3 w-100">
@@ -98,6 +118,12 @@ function Home() {
 					<div className="gap-1 d-flex flex-column">
 						<h2 className="fs-6">Gerenciar Grupos</h2>
 						<GerenciarGrupos />
+					</div>
+				)}
+				{isAdmin && selectedTab === "Cadastrar-Usuario" && (
+					<div className="gap-1 d-flex flex-column">
+						<h2 className="fs-6">Cadastrar Usuário</h2>
+						<CadastrarUsuario />
 					</div>
 				)}
 			</section>

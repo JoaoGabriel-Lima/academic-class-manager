@@ -2,11 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-
+import useAuthFetch from "@/hooks/useAuthFetch";
+import { URL_BASE } from "@/util/constants";
 import type { Turma } from "../turmas/type";
 import TableSection from "./pagination-table";
 import TurmaSection from "./turma-section";
-import useAuthFetch from "@/hooks/useAuthFetch";
 
 export default function BuscarTurmas() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -17,7 +17,7 @@ export default function BuscarTurmas() {
 		queryKey: ["turmas-buscar", searchTerm],
 		queryFn: async () => {
 			const response = await authFetch(
-				`http://localhost:8080/api/turmas/buscar?search=${searchTerm}&page=1&size=100`,
+				`${URL_BASE}/api/turmas/buscar?search=${searchTerm}&page=1&size=100`,
 			);
 			const data = await response.json();
 			return data.itens;

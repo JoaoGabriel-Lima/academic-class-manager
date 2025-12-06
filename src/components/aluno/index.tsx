@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { PiSpinner } from "react-icons/pi";
+import useApi from "@/hooks/useApi";
 import AlunoCard from "./card";
 import type { Aluno } from "./type";
-import useAuthFetch from "@/hooks/useAuthFetch";
 
 export default function AlunosTab() {
-	const { authFetch } = useAuthFetch();
+	const { recuperarTodos } = useApi<Aluno>("/api/alunos");
+
 	const { data: alunos = [], isLoading } = useQuery<Array<Aluno>>({
 		queryKey: ["alunos"],
-		queryFn: async () => {
-			const response = await authFetch("http://localhost:8080/api/alunos");
-			return response.json();
-		},
+		queryFn: recuperarTodos,
 	});
 
 	return (

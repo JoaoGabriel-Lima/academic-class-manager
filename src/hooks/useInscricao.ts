@@ -1,30 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Aluno } from "../components/aluno/type";
 import type { Disciplina, Turma } from "../components/turmas/type";
+import useApi from "./useApi";
 import useAuthFetch from "./useAuthFetch";
 
-const API_BASE_URL = "http://localhost:8080/api";
-
 export function useGetDisciplinas() {
-	const { authFetch } = useAuthFetch();
+	const { recuperarTodos } = useApi<Disciplina>("/api/disciplinas");
+
 	return useQuery({
 		queryKey: ["disciplinas"],
-		queryFn: async (): Promise<Disciplina[]> => {
-			const response = await authFetch(`${API_BASE_URL}/disciplinas`);
-			if (!response.ok) throw new Error("Failed to fetch disciplinas");
-			return response.json();
-		},
+		queryFn: recuperarTodos,
 	});
 }
 
 export function useGetTurmasPorDisciplina(disciplinaId: number | null) {
 	const { authFetch } = useAuthFetch();
+
 	return useQuery({
 		queryKey: ["turmas", "disciplina", disciplinaId],
 		queryFn: async (): Promise<Turma[]> => {
 			if (!disciplinaId) return [];
 			const response = await authFetch(
-				`${API_BASE_URL}/turmas/disciplina/${disciplinaId}`,
+				`http://localhost:8080/api/turmas/disciplina/${disciplinaId}`,
 			);
 			if (!response.ok) throw new Error("Failed to fetch turmas");
 			return response.json();
@@ -35,11 +32,14 @@ export function useGetTurmasPorDisciplina(disciplinaId: number | null) {
 
 export function useGetAlunosInscritos(turmaId: number | null) {
 	const { authFetch } = useAuthFetch();
+
 	return useQuery({
 		queryKey: ["alunos", "turma", turmaId],
 		queryFn: async (): Promise<Aluno[]> => {
 			if (!turmaId) return [];
-			const response = await authFetch(`${API_BASE_URL}/turmas/${turmaId}/alunos`);
+			const response = await authFetch(
+				`http://localhost:8080/api/turmas/${turmaId}/alunos`,
+			);
 			if (!response.ok) throw new Error("Failed to fetch alunos inscritos");
 			return response.json();
 		},
@@ -48,20 +48,23 @@ export function useGetAlunosInscritos(turmaId: number | null) {
 }
 
 export function useGetTodosAlunos() {
-	const { authFetch } = useAuthFetch();
+	const { recuperarTodos } = useApi<Aluno>("/api/alunos");
+
 	return useQuery({
 		queryKey: ["alunos", "todos"],
-		queryFn: async (): Promise<Aluno[]> => {
-			const response = await authFetch(`${API_BASE_URL}/alunos`);
-			if (!response.ok) throw new Error("Failed to fetch todos alunos");
-			return response.json();
-		},
+		queryFn: recuperarTodos,
 	});
 }
 
+interface Inscricao {
+	aluno: { id: number };
+	turma: { id: number };
+}
+
 export function useInscreverAluno() {
-	const { authFetch } = useAuthFetch();
+	const { criar } = useApi<Inscricao>("/api/inscricoes");
 	const queryClient = useQueryClient();
+
 	return useMutation({
 		mutationFn: async ({
 			alunoId,
@@ -70,16 +73,10 @@ export function useInscreverAluno() {
 			alunoId: number;
 			turmaId: number;
 		}) => {
-			const response = await authFetch(`${API_BASE_URL}/inscricoes`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					aluno: { id: alunoId },
-					turma: { id: turmaId },
-				}),
-			});
-			if (!response.ok) throw new Error("Failed to inscrever aluno");
-			return response.json();
+			return criar({
+				aluno: { id: alunoId },
+				turma: { id: turmaId },
+			} as Omit<Inscricao, "id">);
 		},
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({
